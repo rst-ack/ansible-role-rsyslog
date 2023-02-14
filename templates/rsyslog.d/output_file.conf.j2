@@ -1,0 +1,50 @@
+{{ ansible_managed | comment }}
+#
+# This output configuration writes log to several log files.
+# Logs are grouped based on facility, consistent with default log files for CentOS/RHEL.
+#
+
+#
+# Actions
+#
+
+{% if rsyslog_receiver %}
+template(
+  name="{{ rsyslog_remote_log_save_path_template_name }}"
+  type="string"
+  string="{{ rsyslog_remote_log_save_path_template }}"
+)
+
+ruleset(name="writeToFile") {
+  action(
+    type="omfile"
+    FileOwner="{{ rsyslog_fileowner }}"
+    FileGroup="{{ rsyslog_filegroup }}"
+    dirOwner="{{ rsyslog_dirowner }}"
+    dirGroup="{{ rsyslog_dirgroup }}"
+    FileCreateMode="{{ rsyslog_filecreatemode }}"
+    DirCreateMode="{{ rsyslog_dircreatemode}}"
+    dynaFile="{{ rsyslog_remote_log_save_path_template_name }}"
+  )
+}
+
+{% for item in rsyslog_file_output_rules %}
+{{ item.rule }} {
+    set $.logpath = "{{ item.logfile }}";
+    call writeToFile
+}
+{% endfor %}
+
+{% else %}
+
+{% for item in rsyslog_file_output_rules %}
+{{ item.rule }} action(
+    type="omfile"
+    fileCreateMode="{{ rsyslog_filecreatemode }}"
+    fileOwner="{{ rsyslog_fileowner }}"
+    fileGroup="{{ rsyslog_filegroup }}"
+    File="{{ item.logfile }}"
+)
+{% endfor %}
+
+{% endif %}

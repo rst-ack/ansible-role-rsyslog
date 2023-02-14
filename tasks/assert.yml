@@ -1,0 +1,210 @@
+---
+- name: Test if rsyslog_receiver is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_receiver is defined
+      - rsyslog_receiver is boolean
+    quiet: yes
+
+- name: Test if rsyslog_remote_protocols is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_remote_protocols is defined
+      - rsyslog_remote_protocols is iterable
+    quiet: yes
+
+- name: Test if rsyslog_preservefqdn is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_preservefqdn is defined
+      - rsyslog_preservefqdn is boolean
+    quiet: yes
+
+- name: Test if rsyslog_dircreatemode is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_dircreatemode is defined
+      - rsyslog_dircreatemode is string
+    quiet: yes
+
+- name: Test if rsyslog_filecreatemode is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_filecreatemode is defined
+      - rsyslog_filecreatemode is string
+    quiet: yes
+
+- name: Test if rsyslog_fileowner is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_fileowner is defined
+      - rsyslog_fileowner is string
+    quiet: yes
+
+- name: Test if rsyslog_filegroup is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_filegroup is defined
+      - rsyslog_filegroup is string
+    quiet: yes
+
+- name: Test if rsyslog_dirowner is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_dirowner is defined
+      - rsyslog_dirowner is string
+    quiet: yes
+
+- name: Test if rsyslog_dirgroup is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_dirgroup is defined
+      - rsyslog_dirgroup is string
+    quiet: yes
+
+- name: Test if rsyslog_modules is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_modules is defined
+      - rsyslog_modules is iterable
+    quiet: yes
+
+- name: Test if item in rsyslog_modules is set correctly
+  ansible.builtin.assert:
+    that:
+      - item is defined
+      - item is string
+      - item in [ "imuxsock", "imjournal", "imklog", "immark" ]
+    quiet: yes
+  loop: "{{ rsyslog_modules }}"
+
+- name: Test if rsyslog_package_state is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_package_state is defined
+      - rsyslog_package_state is string
+      - rsyslog_package_state in [ "present", "latest" ]
+    quiet: yes
+
+- name: Test if rsyslog_max_message_size is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_max_message_size is defined
+      - rsyslog_max_message_size is string
+    quiet: yes
+
+- name: Test if rsyslog_use_tls is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_use_tls is defined
+      - rsyslog_use_tls is boolean
+    quiet: yes
+
+- name: Test if rsyslog_tls_ca_file is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_tls_ca_file is defined
+      - rsyslog_tls_ca_file is string
+    quiet: yes
+
+- name: Test if rsyslog_tls_cert_file is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_tls_cert_file is defined
+      - rsyslog_tls_cert_file is string
+    quiet: yes
+
+- name: Test if rsyslog_tls_key_file is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_tls_key_file is defined
+      - rsyslog_tls_key_file is string
+    quiet: yes
+
+- name: Test if rsyslog_plugins is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_plugins is iterable
+    quiet: yes
+  when:
+    - rsyslog_plugins is defined
+
+- name: Test if rsyslog_omit_local_logging is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_omit_local_logging is defined
+      - rsyslog_omit_local_logging is boolean
+    quiet: yes
+
+- name: Test if rsyslog_queue_dir is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_queue_dir is defined
+      - rsyslog_queue_dir is string
+    quiet: yes
+
+- name: Test if rsyslog_queue_filename is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_queue_filename is defined
+      - rsyslog_queue_filename is string
+    quiet: yes
+
+- name: Test if rsyslog_queue_type is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_queue_type is defined
+      - rsyslog_queue_type is string
+      - rsyslog_queue_type in [ "FixedArray", "LinkedList", "Direct", "Disk" ]
+    quiet: yes
+
+- name: Test if rsyslog_queue_size is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_queue_size is defined
+      - rsyslog_queue_size is number
+    quiet: yes
+
+- name: Test if rsyslog_queue_threads is set correctly and with a sane value
+  ansible.builtin.assert:
+    that:
+      - rsyslog_queue_threads is defined
+      - rsyslog_queue_threads is number
+      - rsyslog_queue_threads > 0
+      - rsyslog_queue_threads < 65536
+    quiet: yes
+
+- name: Test if rsyslog_queue_min_messages is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_queue_min_messages is defined
+      - rsyslog_queue_min_messages is number
+    quiet: yes
+
+- name: Test if rsyslog_queue_dequeue_batch_size is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_queue_dequeue_batch_size is defined
+      - rsyslog_queue_dequeue_batch_size is number
+    quiet: yes
+
+- name: Test if rsyslog_queue_save_on_shutdown is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_queue_save_on_shutdown is defined
+      - rsyslog_queue_save_on_shutdown is boolean
+    quiet: yes
+
+- name: Test if rsyslog_remote_log_save_path_template_name is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_remote_log_save_path_template_name is defined
+      - rsyslog_remote_log_save_path_template_name is string
+    quiet: yes
+
+- name: Test if rsyslog_remote_log_save_path_template is set correctly
+  ansible.builtin.assert:
+    that:
+      - rsyslog_remote_log_save_path_template is defined
+      - rsyslog_remote_log_save_path_template is string
+    quiet: yes

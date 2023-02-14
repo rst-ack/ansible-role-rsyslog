@@ -1,0 +1,20 @@
+{{ ansible_managed | comment }}
+#
+# This configuration enables to capability to receive syslog on TCP.
+#
+
+#
+# Load the TCP input module
+#
+module(
+    load="imptcp"
+    Threads="2"
+)
+
+#
+# Input
+#
+input(
+    type="imptcp"
+    port="{{ rsyslog_remote_protocols['tcp'] }}"
+)

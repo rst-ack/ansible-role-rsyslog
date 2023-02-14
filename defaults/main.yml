@@ -1,0 +1,104 @@
+# To configure the target machine to receive logs, set rsyslog_receiver to yes.
+rsyslog_receiver: no
+
+# Hostname or IP address of the host to send syslog data to. By not setting this variable, the target machine will not forward logs.
+# rsyslog_remote:
+
+# tcp, udp, and/or relp
+rsyslog_remote_protocols:
+  tcp: 514
+
+# Set the mode for new directories
+rsyslog_dircreatemode: "0700"
+rsyslog_dirowner: "root"
+rsyslog_dirgroup: "root"
+
+# Set the mode for new files
+rsyslog_filecreatemode: "0644"
+rsyslog_fileowner: "root"
+rsyslog_filegroup: "root"
+
+rsyslog_modules:
+  - imuxsock
+  - imjournal
+
+rsyslog_client_file_output_rules:
+  - rule: "*.info,mail.none,authpriv.none,cron.none"
+    logpath: "/var/log/messages"
+  - rule: "authpriv.*"
+    logpath: "/var/log/secure"
+  - rule: "mail.*"
+    logpath: "-/var/log/maillog"
+  - rule: "cron.*"
+    logpath: "/var/log/cron"
+  - rule: "*.emerg"
+    logpath: ":omusrmsg:*"
+  - rule: "uucp,news.crit"
+    logpath: "/var/log/spooler"
+  - rule: "local7.*"
+    logpath: "/var/log/boot.log"
+  - rule: "*.debug"
+    logpath: "/var/log/debug.log"
+
+rsyslog_preservefqdn: no
+rsyslog_package_state: present
+rsyslog_drop_malicious_ptr_records: no
+
+rsyslog_use_tls: no
+# Only relevant if rsyslog_use_tls is set to yes
+rsyslog_tls_ca_file: /etc/rsyslog.d/keys/rootCA.crt
+rsyslog_tls_cert_file: /etc/rsyslog.d/keys/logmanagement-client.crt
+rsyslog_tls_key_file: /etc/rsyslog.d/keys/logmanagement-client.key
+
+# Install additional rsyslog plugins
+# For example, to install the elastisearch plugin:
+# rsyslog_plugins:
+#   - gnutls
+#   - elastisearch
+rsyslog_plugins: []
+
+# Configure custom configs to deploy in /etc/rsyslog.d/
+# Example:
+# rsyslog_custom_configs:
+#   forward_splunk_tcp:
+#     content: |
+#       action(type="omfwd"
+#         target="splunk-indexer.example.com"
+#         port="514"
+#         protocol="tcp")
+rsyslog_custom_configs: {}
+
+# Set maximum message length
+rsyslog_max_message_size: "4k"
+
+# https://www.rsyslog.com/doc/v8-stable/configuration/modules/imuxsock.html#syssock-use
+rsyslog_imuxsock_syssock: yes
+
+# Default destination of rsyslog config file
+rsyslog_dest_conf_file: "/etc/rsyslog.conf"
+
+# Enable / Disable option OmitLocalLogging
+rsyslog_omit_local_logging: yes
+
+# rsyslog queue settings
+rsyslog_queue_dir: "{{ rsyslog_work_directory }}/queue"
+rsyslog_queue_filename: "input.q"
+# Queue type
+# Allowed types are: FixedArray, LinkedList, Direct, or Disk
+rsyslog_queue_type: "LinkedList"
+# queue sizing:
+# - size for 1.000.000 messages in-memory queue
+# - assume avg. message size is 1024 bytes
+# - overhead due to pointers: 4 bytes on 32bit systems, 8 bytes on 64bit systems
+# - memory usage: 1000000 * 1024 byyes + (1000000 * 8 bytes) = 984 MB
+rsyslog_queue_size: 1000000
+rsyslog_queue_threads: 1
+# Defines the minimum number of messages in the queue to start a new thread
+rsyslog_queue_min_messages: 1000
+rsyslog_queue_dequeue_batch_size: 16
+# Save the queue to disk on shutdown
+rsyslog_queue_save_on_shutdown: on
+
+# dynaFile template options
+rsyslog_remote_log_save_path_template_name: "RemoteLogSavePath"
+rsyslog_remote_log_save_path_template: "/var/log/remote_syslog/%SOURCE%/%$YEAR%-%$MONTH%-%$DAY%/%$.logpath%"

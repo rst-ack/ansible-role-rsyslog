@@ -1,0 +1,112 @@
+{{ ansible_managed | comment }}
+#
+# /etc/rsyslog.conf - global configuration file
+#
+
+#
+# Global settings
+# ---------------
+#
+global(
+    # Set a liberal umask here - to be overriden in output actions
+    umask="0000"
+
+    # Working directory - temp/state files are stored here
+    workDirectory="{{ rsyslog_work_directory }}"
+
+    # Truncate messages after 4kb
+    maxMessageSize="{{ rsyslog_max_message_size }}"
+
+    # Keep the domain in the source hostname?
+    preserveFQDN="{{ 'on' if rsyslog_preservefqdn else 'off' }}"
+
+    {% if rsyslog_local_hostname is defined %}
+    # Set the hostname you want to use for this system
+    localHostname="{{ rsyslog_local_hostname }}"
+    {% endif %}
+
+    {% if rsyslog_use_tls %}
+    # TLS
+    defaultNetstreamDriver="gtls"
+    defaultNetstreamDriverCAFile="{{ rsyslog_tls_ca_file }}"
+    defaultNetstreamDriverCertFile="{{ rsyslog_tls_cert_file }}"
+    defaultNetstreamDriverKeyFile="{{ rsyslog_tls_key_file }}"
+    {% endif %}
+)
+
+#
+# Built-in modules
+# ----------------
+# Explicitly load builtin modules for completeness.
+#
+module(
+    load="builtin:omfwd"
+)
+
+module(
+    load="builtin:omfile"
+)
+
+module(
+    load="builtin:ompipe"
+)
+
+main_queue(
+
+    # queue spool directory, must already exist
+    queue.spoolDirectory="{{ rsyslog_queue_dir }}"
+    queue.filename="{{ rsyslog_queue_filename }}"
+
+    # define queue type (in-memory only)
+    queue.type="{{ rsyslog_queue_type }}"
+
+    queue.size="{{ rsyslog_queue_size }}"
+
+    # queue management
+    queue.workerthreads="{{ rsyslog_queue_threads }}" # out-of-order delivery when > 1
+    queue.workerthreadminimummessages="{{ rsyslog_queue_min_messages }}" # start a thread for every X messages in q
+    queue.dequeuebatchsize="{{ rsyslog_queue_dequeue_batch_size }}"
+
+    # save log on exit
+    queue.saveonshutdown="{{ 'on' if rsyslog_queue_save_on_shutdown else 'off' }}"
+
+)
+
+{% if 'imjournal' in rsyslog_modules %}
+#
+# This input module reads from systemd's journal
+#
+module(
+    load="imjournal"
+    PersistStateInterval="50"
+    StateFile="/var/lib/rsyslog/imjournal.state"
+)
+{% endif %}
+
+{% if 'imuxsock' in rsyslog_modules %}
+#
+# This module reads from the traditional syslog socket.
+#
+module(
+    load="imuxsock"
+    {{ SysSock.Use="off"' if not rsyslog_imuxsock_syssock else SysSock.Use="on" }}
+    SysSock.Name="/dev/log"
+)
+{% endif %}
+
+{% if rsyslog_receiver %}
+{%- for key, value in rsyslog_remote_protocols | dictsort %}
+$IncludeConfig /etc/rsyslog.d/input_syslog_{{ key }}.conf
+{% endfor %}
+{% endif %}
+$IncludeConfig /etc/rsyslog.d/output_file.conf
+{% if rsyslog_remote_server is defined %}
+{%- for key, value in rsyslog_remote_protocols | dictsort %}
+$IncludeConfig /etc/rsyslog.d/forward_syslog_{{ key }}.conf
+{% endfor %}
+{% endif %}
+{% if rsyslog_custom_configs is defined %}
+{%- for key, value in rsyslog_custom_configs | dictsort %}
+$Include /etc/rsyslog.d/{{ key }}.conf
+{% endfor %}
+{% endif %}

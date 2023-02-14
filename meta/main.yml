@@ -1,0 +1,39 @@
+---
+galaxy_info:
+  author: rst-ack
+  role_name: rsyslog
+  description: A modular approach to configuring the Rsyslog daemon.
+  license: GPLv3
+  company: none
+  min_ansible_version: "2.10"
+
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+    - name: Amazon
+      versions:
+        - Candidate
+    - name: EL
+      versions:
+        - "8"
+    - name: Debian
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - "36"
+        - "37"
+    - name: opensuse
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+
+  galaxy_tags:
+    - rsyslog
+    - installer
+    - package
+
+dependencies: []

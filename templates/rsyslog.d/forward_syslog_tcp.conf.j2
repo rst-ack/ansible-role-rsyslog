@@ -1,0 +1,11 @@
+{{ ansible_managed | comment }}
+#
+# This configuration enables forwarding syslog over TCP.
+#
+action(
+  type="omfwd"
+  target="{{ rsyslog_remote_server }}"
+  port="{{ rsyslog_remote_protocols['tcp'] }}"
+  protocol="tcp"
+  StreamDriverMode="0"
+)
