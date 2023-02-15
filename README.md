@@ -4,7 +4,46 @@ A modular approach to configuring the Rsyslog daemon. Now with more complex conf
 
 ## Requirements
 
-None.
+If you are deploying this syslog configuration on a CentOS or RHEL machine with SELinux enabled, you will need to configure it to allow certain actions.
+
+Here is an example SELinux policy (in `.te` format -- you will need to compile and install it yourself) that has worked for me:
+
+```perl
+module rsyslog_policy 1.0;
+
+require {
+	type fsdaemon_t;
+	type unconfined_t;
+	type device_t;
+	type syslogd_t;
+	type auditd_t;
+	type local_login_t;
+	type sshd_t;
+	type setroubleshootd_t;
+	class sock_file { unlink write };
+	class unix_dgram_socket sendto;
+}
+
+#============= auditd_t ==============
+allow auditd_t device_t:sock_file write;
+
+#============= fsdaemon_t ==============
+allow fsdaemon_t device_t:sock_file write;
+
+#============= local_login_t ==============
+allow local_login_t device_t:sock_file write;
+
+#============= setroubleshootd_t ==============
+allow setroubleshootd_t device_t:sock_file write;
+
+#============= sshd_t ==============
+allow sshd_t device_t:sock_file write;
+allow sshd_t unconfined_t:unix_dgram_socket sendto;
+
+#============= syslogd_t ==============
+allow syslogd_t device_t:sock_file write;
+allow syslogd_t device_t:sock_file unlink;
+```
 
 ## Role Variables
 
