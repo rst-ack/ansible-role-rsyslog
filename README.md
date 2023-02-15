@@ -266,3 +266,8 @@ This role was created in 2023 with inspiration from:
 
 * [Robert DeBock's rsyslog role](https://github.com/robertdebock/ansible-role-rsyslog)
 * [jmaas's rsyslog-configs](https://github.com/jmaas/rsyslog-configs)
+
+## Future Improvements
+
+* Support for clients sending logs to multiple servers
+* Support for automatic generation of certificates for forwarding logs over TLS/RELP
